@@ -1098,10 +1098,51 @@
       .replace(/¿Te fue útil\? Sí/g, '');
   };
 
-  // 6 y 7. Inicio mínimo: sin KPIs, saludo narrativo ni accesos rápidos.
+  // 6 y 7. Inicio: accesos rápidos a los módulos (navegación/usabilidad, RNF-01).
+  //    Sin KPIs, números, gráficas ni widgets de analítica. Solo tarjetas que
+  //    navegan a cada módulo, filtradas por los permisos del rol activo
+  //    (mismo criterio que el menú lateral: allowed(ruta)).
   window.home = function () {
+    const grupos = [
+      ['Operación', [
+        ['recepcion', 'package-plus', 'Recepción de lotes', 'Recibir e individualizar botellas'],
+        ['escaneo', 'scan-line', 'Escaneo', 'Entradas, salidas y devoluciones por código'],
+        ['asignar', 'map-pin', 'Asignar y ubicar', 'Resolver pendientes de ubicación'],
+        ['eventos', 'calendar-days', 'Eventos', 'Gestión de eventos y asignaciones'],
+        ['ordenes', 'clipboard-list', 'Órdenes de salida', 'Órdenes formales de salida'],
+        ['ajustes', 'sliders-horizontal', 'Ajustes', 'Ajustes de inventario y autorizaciones'],
+      ]],
+      ['Inventario', [
+        ['cavas', 'warehouse', 'Cavas', 'Cavas y su matriz de anaqueles'],
+        ['anaqueles', 'layout-grid', 'Anaqueles', 'Anaqueles, celdas y ocupación'],
+        ['vinos', 'wine', 'Vinos', 'Catálogo de vinos y presentaciones'],
+        ['consultas', 'history', 'Consultas e historial', 'Buscar historia de una botella'],
+      ]],
+      ['Análisis', [
+        ['reportes', 'chart-no-axes-column-increasing', 'Reportes', 'Reportes operativos y exportación'],
+        ['ia', 'sparkles', 'Asistente IA', 'Consultas y sugerencias controladas'],
+      ]],
+    ];
+
+    const secciones = grupos.map(([titulo, cards]) => {
+      const visibles = cards.filter(c => allowed(c[0]));
+      if (!visibles.length) return '';
+      return `<section class="home-section">
+        <div class="nav-group">${titulo}</div>
+        <div class="home-grid">${visibles.map(([ruta, icono, nombre, desc]) => `
+          <button class="module-card" onclick="goto('${ruta}')">
+            <span class="module-card-icon">${I(icono)}</span>
+            <span class="module-card-body">
+              <strong>${nombre}</strong>
+              <span class="muted">${desc}</span>
+            </span>
+          </button>`).join('')}</div>
+      </section>`;
+    }).join('');
+
     return `<div class="page">${pageHead('Inicio', 'Sistema de Administración de Cavas de Sigma Foods.')}
-      <div class="card"><h2>Bienvenido</h2><p class="muted">Selecciona un módulo en el menú lateral para comenzar: recepción de lotes, escaneo, eventos, órdenes, inventario, consultas, reportes o catálogos.</p></div></div>`;
+      ${secciones || '<div class="card"><p class="muted">No hay módulos disponibles para tu rol.</p></div>'}
+    </div>`;
   };
 
   // -----------------------------------------------------------------------
