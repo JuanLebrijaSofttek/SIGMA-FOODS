@@ -1131,11 +1131,8 @@
         <div class="nav-group">${titulo}</div>
         <div class="home-grid">${visibles.map(([ruta, icono, nombre, desc]) => `
           <button class="module-card" onclick="goto('${ruta}')">
-            <span class="module-card-icon">${I(icono)}</span>
-            <span class="module-card-body">
-              <strong>${nombre}</strong>
-              <span class="muted">${desc}</span>
-            </span>
+            <span class="module-card-head">${I(icono)}${nombre}</span>
+            <span class="muted">${desc}</span>
           </button>`).join('')}</div>
       </section>`;
     }).join('');
